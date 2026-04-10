@@ -24,11 +24,11 @@ col1.metric("👤 Unique Users", f"{unique_users:,}")
 col2.metric("📚 Author Sets", author_sets)
 col3.metric("🏆 Top Customer", f"${top_customer:.2f}")
 
-st.subheader("💰 Top 5 Days by Revenue")
+st.subheader("💰 Top 5 Days (by daily revenue)")
 st.dataframe(top5)
 
 st.subheader("✍️ Most Popular Author")
 st.write(popular_author[0])  # убираем ('name',)
 
-st.subheader("📈 Daily Revenue")
+st.subheader("📈 Daily Revenue Trend")
 st.line_chart(daily)
