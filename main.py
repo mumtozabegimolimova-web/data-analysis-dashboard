@@ -4,6 +4,31 @@ import yaml
 import re
 import matplotlib.pyplot as plt
 
+def analyze_dataset(path):
+    users, orders, books = load_data(path)
+
+    df = merge_data(users, orders, books)
+    df = prepare_data(df)
+
+    df = df[df["paid_price"] < df["paid_price"].quantile(0.99)]
+
+    top5 = get_top5_days(df)
+    unique_users = get_unique_users(df)
+    author_sets = get_author_sets(df)
+    popular_author = get_most_popular_author(df)
+    top_customer = get_top_customer(df)
+
+    daily = df.groupby("date")["paid_price"].sum()
+
+    return {
+        "top5": top5,
+        "unique_users": unique_users,
+        "author_sets": author_sets,
+        "popular_author": popular_author,
+        "top_customer": top_customer,
+        "daily": daily
+    }
+
 DATA_PATH = "data/DATA1"
 
 
@@ -66,6 +91,9 @@ def prepare_data(df):
     df["paid_price"] = df["quantity"] * df["unit_price"]
     df["date"] = df["timestamp"].dt.date
 
+    q = df["paid_price"].quantile(0.99)
+    df = df[df["paid_price"] <= q]
+
     return df
 
 
@@ -74,12 +102,9 @@ def get_top5_days(df):
     daily = df.groupby("date")["paid_price"].sum()
     return daily.sort_values(ascending=False).head(5).round(2)
 
-
 # ---------- MAIN ----------
 def main():
     users, orders, books = load_data(DATA_PATH)
-
-    print("Loaded OK ✅")
 
     df = merge_data(users, orders, books)
     df = prepare_data(df)
@@ -140,5 +165,16 @@ def plot_daily_revenue(df):
     plt.ylabel("Revenue")
     plt.show()
 
-if __name__ == "__main__":
-    main()
+def calculate_metrics(df):
+    top5 = df.groupby(df["timestamp"].dt.date)["paid_price"].sum().nlargest(5)
+
+    unique_users = df["user_id"].nunique()
+    author_sets = df["author"].nunique()
+
+    popular_author = df["author"].mode()
+
+    top_customer = df.groupby("user_id")["paid_price"].sum().max()
+
+    daily = df.groupby(df["timestamp"].dt.date)["paid_price"].sum()
+
+    return top5, unique_users, author_sets, popular_author, top_customer, daily
