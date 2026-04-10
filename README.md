@@ -24,3 +24,6 @@ This project analyzes book sales data and provides an interactive dashboard.
 `bash
 pip install -r requirements.txt
 streamlit run app.py
+
+## Live Demo
+https://data-analysis-dashboard-jbc6y9gkvzxq3hnvprq5w6.streamlit.app
