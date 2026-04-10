@@ -22,7 +22,7 @@ col1, col2, col3 = st.columns(3)
 
 col1.metric("👤 Unique Users", f"{unique_users:,}")
 col2.metric("📚 Author Sets", author_sets)
-col3.metric("🏆 Top Customer", top_customer)
+col3.metric("🏆 Top Customer", f"${top_customer:.2f}")
 
 st.subheader("💰 Top 5 Days by Revenue")
 st.dataframe(top5)
