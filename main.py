@@ -83,12 +83,8 @@ def prepare_data(df):
     # --- TIMESTAMP ---
     df["timestamp"] = df["timestamp"].astype(str)
 
-    # убираем A.M. / P.M.
-    df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM", regex=False)
-    df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
-
     # преобразуем в datetime
-    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
 
     # удаляем мусор
     df = df.dropna(subset=["timestamp"])
