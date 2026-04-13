@@ -87,7 +87,12 @@ def prepare_data(df):
         pd.to_datetime(x)
       except Exception as e:
         bad_values.append(x)
+        
     print(bad_values[:10])
+
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+
+    df = df.dropna(subset=["timestamp"])
 
     df["date"] = df["timestamp"].dt.date
 
