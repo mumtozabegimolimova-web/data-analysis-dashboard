@@ -80,15 +80,12 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    df["timestamp"] = df["timestamp"].astype(str)
-
-    df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM", regex=False)
-    df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
-
-    df["timestamp"] = pd.to_datetime(
-    df["timestamp"],
-    format="%m/%d/%y %I:%M:%S %p"
-)
+    for x in df["timestamp"]:
+       try:
+        pd.to_datetime(x, format="%m/%d/%y %I:%M:%S %p")
+       except:
+        print("BAD:", x)
+        break
 
     df["date"] = df["timestamp"].dt.date
 
