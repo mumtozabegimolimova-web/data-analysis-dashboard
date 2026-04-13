@@ -80,12 +80,14 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
+    bad_values = []
+
     for x in df["timestamp"]:
-       try:
-        pd.to_datetime(x, format="%m/%d/%y %I:%M:%S %p")
-       except:
-        print("BAD:", x)
-        break
+      try:
+        pd.to_datetime(x)
+      except Exception as e:
+        bad_values.append(x)
+    print(bad_values[:10])
 
     df["date"] = df["timestamp"].dt.date
 
