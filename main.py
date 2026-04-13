@@ -83,12 +83,23 @@ def prepare_data(df):
     # --- TIMESTAMP ---
     df["timestamp"] = df["timestamp"].astype(str)
 
+# убираем точки (A.M. → AM)
     df["timestamp"] = df["timestamp"].str.replace(".", "", regex=False)
 
-    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+# парсим + сразу приводим к UTC
+    df["timestamp"] = pd.to_datetime(
+    df["timestamp"],
+    errors="coerce",
+    utc=True
+)
 
+# удаляем мусор
     df = df.dropna(subset=["timestamp"])
 
+# убираем timezone (делаем "наивное" время)
+    df["timestamp"] = df["timestamp"].dt.tz_convert(None)
+
+# дата
     df["date"] = df["timestamp"].dt.date
 
     # --- CLEAN NUMBERS ---
