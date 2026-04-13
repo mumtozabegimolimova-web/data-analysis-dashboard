@@ -80,31 +80,32 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    df["timestamp"] = df["timestamp"].astype(str)
+    # 1. приводим к строке
+  df["timestamp"] = df["timestamp"].astype(str)
 
-    df["timestamp"] = (
-        df["timestamp"]
-        .astype(str)
-        .str.replace("A.M.", "AM", regex=False)
-        .str.replace("P.M.", "PM", regex=False)
-    )
+# 2. чистим AM/PM
+  df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM", regex=False)
+  df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
 
-    # удалить мусорные даты
-    df = df.dropna(subset=["timestamp"])
+# 3. парсим БЕЗ строгого формата
+  df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
 
-    # отдельная колонка даты
-    df["date"] = df["timestamp"].dt.date
+# 4. убираем мусор
+  df = df[df["timestamp"].notna()]
+
+# 5. дата отдельно
+  df["date"] = df["timestamp"].dt.date
 
     # --- CLEAN NUMBERS ---
-    df["unit_price"] = df["unit_price"].apply(clean_price)
-    df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
+  df["unit_price"] = df["unit_price"].apply(clean_price)
+  df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
 
-    df = df.dropna(subset=["unit_price", "quantity"])
+  df = df.dropna(subset=["unit_price", "quantity"])
 
     # --- CALCULATE ---
-    df["paid_price"] = df["quantity"] * df["unit_price"]
+  df["paid_price"] = df["quantity"] * df["unit_price"]
 
-    return df
+  return df
 
 
 # ---------- METRICS ----------
