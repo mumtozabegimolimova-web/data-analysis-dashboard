@@ -84,6 +84,7 @@ def prepare_data(df):
     df["timestamp"] = df["timestamp"].astype(str)
 
     # преобразуем в datetime
+    df["timestamp"] = df["timestamp"].str.replace(".", "", regex=False)
     df["timestamp"] = pd.to_datetime(df["timestamp"], format="%m/%d/%y %I:%M:%S %p")
 
     # удаляем мусор
