@@ -80,20 +80,20 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    bad_values = []
+    # --- TIMESTAMP ---
+    df["timestamp"] = df["timestamp"].astype(str)
 
-    for x in df["timestamp"]:
-      try:
-        pd.to_datetime(x)
-      except Exception as e:
-        bad_values.append(x)
-        
-    print(bad_values[:10])
+    # убираем A.M. / P.M.
+    df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM", regex=False)
+    df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
 
+    # преобразуем в datetime
     df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
 
+    # удаляем мусор
     df = df.dropna(subset=["timestamp"])
 
+    # создаём дату
     df["date"] = df["timestamp"].dt.date
 
     # --- CLEAN NUMBERS ---
@@ -106,6 +106,17 @@ def prepare_data(df):
     df["paid_price"] = df["quantity"] * df["unit_price"]
 
     return df
+
+
+# ---------- METRICS ----------
+def get_metrics(df):
+    # дневная выручка
+    daily = df.groupby("date")["paid_price"].sum()
+
+    # топ 5 дней
+    top5 = daily.sort_values(ascending=False).head(5).round(2)
+
+    return daily, top5
 
 
 # ---------- METRICS ----------
