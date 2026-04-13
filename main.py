@@ -80,23 +80,30 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM")
-    df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM")
+    # fix timestamp
+   df["timestamp"] = (
+    df["timestamp"]
+    .str.replace("A.M.", "AM")
+    .str.replace("P.M.", "PM")
+)
 
-    df["date"] = df["timestamp"].dt.date
+   df["timestamp"] = pd.to_datetime(
+    df["timestamp"],
+    format="%m/%d/%y %I:%M:%S %p"
+)
 
-    df["unit_price"] = df["unit_price"].apply(clean_price)
-    df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
+# create date
+   df["date"] = df["timestamp"].dt.date
+   df["unit_price"] = df["unit_price"].apply(clean_price)
+   df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
 
-    df = df.dropna(subset=["unit_price", "quantity"])
+   df = df.dropna(subset=["unit_price", "quantity"])
 
-    df["paid_price"] = df["quantity"] * df["unit_price"]
-    df["date"] = df["timestamp"].dt.date
+   df["paid_price"] = df["quantity"] * df["unit_price"]
 
-    q = df["paid_price"].quantile(0.99)
-    df = df[df["paid_price"] <= q]
-
-    return df
+   q = df["paid_price"].quantile(0.99)
+   df = df[df["paid_price"] <= q]
+   return df
 
 
 # ---------- METRICS ----------
