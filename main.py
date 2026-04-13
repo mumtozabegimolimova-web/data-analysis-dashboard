@@ -166,8 +166,6 @@ def plot_daily_revenue(df):
     plt.show()
 
 def calculate_metrics(df):
-    top5 = df.groupby(df["timestamp"].dt.date)["paid_price"].sum().nlargest(5)
-
     unique_users = df["user_id"].nunique()
     author_sets = df["author"].nunique()
 
@@ -175,6 +173,10 @@ def calculate_metrics(df):
 
     top_customer = df.groupby("user_id")["paid_price"].sum().max()
 
-    daily = df.groupby(df["timestamp"].dt.date)["paid_price"].sum()
+    df["date"] = df["timestamp"].dt.date
+
+    daily = df.groupby("date")["paid_price"].sum()
+
+    top5 = daily.sort_values(ascending=False).head(5)
 
     return top5, unique_users, author_sets, popular_author, top_customer, daily
