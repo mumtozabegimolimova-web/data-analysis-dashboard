@@ -83,14 +83,12 @@ def prepare_data(df):
     # --- TIMESTAMP ---
     df["timestamp"] = df["timestamp"].astype(str)
 
-    # преобразуем в datetime
     df["timestamp"] = df["timestamp"].str.replace(".", "", regex=False)
-    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%m/%d/%y %I:%M:%S %p")
 
-    # удаляем мусор
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
+
     df = df.dropna(subset=["timestamp"])
 
-    # создаём дату
     df["date"] = df["timestamp"].dt.date
 
     # --- CLEAN NUMBERS ---
