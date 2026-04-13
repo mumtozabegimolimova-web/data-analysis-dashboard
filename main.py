@@ -89,9 +89,6 @@ def prepare_data(df):
         .str.replace("P.M.", "PM", regex=False)
     )
 
-    # безопасный парсинг (не падает)
-    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
-
     # удалить мусорные даты
     df = df.dropna(subset=["timestamp"])
 
