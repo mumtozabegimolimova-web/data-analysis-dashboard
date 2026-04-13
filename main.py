@@ -80,20 +80,18 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    # fix timestamp
    df["timestamp"] = (
     df["timestamp"]
     .str.replace("A.M.", "AM")
     .str.replace("P.M.", "PM")
 )
 
-   df["timestamp"] = pd.to_datetime(
-    df["timestamp"],
-    format="%m/%d/%y %I:%M:%S %p"
-)
+   df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
 
-# create date
+   df = df.dropna(subset=["timestamp"])
+
    df["date"] = df["timestamp"].dt.date
+   
    df["unit_price"] = df["unit_price"].apply(clean_price)
    df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
 
