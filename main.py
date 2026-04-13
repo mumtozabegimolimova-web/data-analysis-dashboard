@@ -80,7 +80,8 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    # --- FIX TIMESTAMP ---
+    df["timestamp"] = df["timestamp"].astype(str)
+
     df["timestamp"] = (
         df["timestamp"]
         .astype(str)
