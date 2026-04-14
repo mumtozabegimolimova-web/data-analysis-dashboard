@@ -97,15 +97,12 @@ def prepare_data(df):
 
     # --- CLEAN NUMBERS ---
     df["unit_price"] = df["unit_price"].apply(clean_price)
-    df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
+    df["quantity"] = pd.to_numeric(df["quantity"])
 
     df = df.dropna(subset=["unit_price", "quantity"])
 
     # --- CALCULATE ---
     df["paid_price"] = df["quantity"] * df["unit_price"]
-
-    print(df["timestamp"].min())
-    print(df["timestamp"].max())
 
     return df
 

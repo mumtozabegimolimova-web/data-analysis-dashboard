@@ -34,3 +34,6 @@ st.subheader("📈 Daily Revenue Trend")
 st.line_chart(daily)
 
 st.caption("Daily revenue = sum of paid_price per day")
+
+st.write(df["timestamp"].min())
+st.write(df["timestamp"].max())
