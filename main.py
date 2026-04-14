@@ -80,24 +80,35 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
+    
     df["timestamp"] = df["timestamp"].astype(str)
 
-# чистим AM/PM
     df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM", regex=False)
     df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
 
-# парсим с utc
-    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="cource", utc=True)
+    t1 = pd.to_datetime(
+        df["timestamp"],
+        format="%m/%d/%y %I:%M:%S %p",
+        errors="coerce"
+    )
 
-# убираем timezone
-    df["timestamp"] = df["timestamp"].dt.tz_localize(None)
+    t2 = pd.to_datetime(
+        df["timestamp"],
+        format="%H:%M:%S-%b-%Y",
+        errors="coerce"
+    )
 
-# создаём дату
+    df["timestamp"] = t1.fillna(t2)
+
+    # удаляем мусор
+    df = df.dropna(subset=["timestamp"])
+
+    # дата
     df["date"] = df["timestamp"].dt.date
 
     # --- CLEAN NUMBERS ---
     df["unit_price"] = df["unit_price"].apply(clean_price)
-    df["quantity"] = pd.to_numeric(df["quantity"])
+    df["quantity"] = pd.to_numeric(df["quantity"], errors="coerce")
 
     df = df.dropna(subset=["unit_price", "quantity"])
 
