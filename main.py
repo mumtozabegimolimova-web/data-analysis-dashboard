@@ -87,7 +87,7 @@ def prepare_data(df):
     df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
 
 # парсим с utc
-    df["timestamp"] = pd.to_datetime(df["timestamp"], utc=True)
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="cource", utc=True)
 
 # убираем timezone
     df["timestamp"] = df["timestamp"].dt.tz_localize(None)
@@ -103,6 +103,9 @@ def prepare_data(df):
 
     # --- CALCULATE ---
     df["paid_price"] = df["quantity"] * df["unit_price"]
+
+    print(df["timestamp"].min())
+    print(df["timestamp"].max())
 
     return df
 
@@ -201,3 +204,4 @@ def calculate_metrics(df):
     top5 = daily.sort_values(ascending=False).head(5)
 
     return top5, unique_users, author_sets, popular_author, top_customer, daily
+
