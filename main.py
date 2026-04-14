@@ -80,26 +80,17 @@ def merge_data(users, orders, books):
 
 # ---------- PREPARE ----------
 def prepare_data(df):
-    # --- TIMESTAMP ---
     df["timestamp"] = df["timestamp"].astype(str)
 
-# убираем точки (A.M. → AM)
-    df["timestamp"] = df["timestamp"].str.replace(".", "", regex=False)
+# убираем точки в AM/PM
+    df["timestamp"] = df["timestamp"].str.replace("A.M.", "AM", regex=False)
+    df["timestamp"] = df["timestamp"].str.replace("P.M.", "PM", regex=False)
 
-# парсим + сразу приводим к UTC
-    df["timestamp"] = pd.to_datetime(
-    df["timestamp"],
-    errors="coerce",
-    utc=True
-)
-
-# удаляем мусор
-    df = df.dropna(subset=["timestamp"])
-
-# убираем timezone (делаем "наивное" время)
-    df["timestamp"] = df["timestamp"].dt.tz_convert(None)
+# универсальный парсинг
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")   
 
 # дата
+    df = df.dropna(subset=["timestamp"])
     df["date"] = df["timestamp"].dt.date
 
     # --- CLEAN NUMBERS ---
